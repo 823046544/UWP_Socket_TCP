@@ -7,7 +7,12 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Margin="0,0,-620,-241">
+        <TextBox x:Name="_input" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Height="30" Width="158" Margin="327,159,0,0" RenderTransformOrigin="0.96,4.6"/>
+        <TextBlock Text="{x:Bind Path=Rec.message, Mode=OneWay }" x:Name="words" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Height="505" Width="347" Margin="327,227,0,0" RenderTransformOrigin="0.455,0.484"/>
+        <Button x:Name="button1" Content="Server" HorizontalAlignment="Left"  VerticalAlignment="Top" Click="Button1_Click" Margin="157,360,0,0"/>
+        <Button x:Name="button2" Content="Connect" HorizontalAlignment="Left"  VerticalAlignment="Top" Click="Button2_Click" Margin="157,400,0,0" RenderTransformOrigin="0.815,3.458"/>
+        <Button x:Name="button3" Content="Send" HorizontalAlignment="Left"  VerticalAlignment="Top" Click="button3_Click" Margin="532,159,0,0" RenderTransformOrigin="0.815,3.458"/>
 
     </Grid>
 </Page>
