@@ -13,6 +13,7 @@
         <Button x:ConnectionId='4' x:Name="button1" Content="Server" HorizontalAlignment="Left"  VerticalAlignment="Top"                       Margin="157,360,0,0"/>
         <Button x:ConnectionId='5' x:Name="button2" Content="Connect" HorizontalAlignment="Left"  VerticalAlignment="Top"                       Margin="157,400,0,0" RenderTransformOrigin="0.815,3.458"/>
         <Button x:ConnectionId='6' x:Name="button3" Content="Send" HorizontalAlignment="Left"  VerticalAlignment="Top"                       Margin="532,159,0,0" RenderTransformOrigin="0.815,3.458"/>
+        <Button x:ConnectionId='7' x:Name="button4" Content="Connet2" HorizontalAlignment="Left"  VerticalAlignment="Top"                       Margin="157,437,0,0" RenderTransformOrigin="0.815,3.458"/>
 
     </Grid>
 </Page>

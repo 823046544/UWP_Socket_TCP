@@ -1,7 +1,10 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
+using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using Windows.Foundation;
@@ -25,18 +28,38 @@ namespace TCP_Socket {
         SynchronizationContext m_SyncContext = null;
         String user_name;
         bool working;
+        List<Windows.Networking.Sockets.StreamSocket> S;
         public MainPage() {
             this.InitializeComponent();
             Rec = new Model.record();
             Rec.message = "";
             user_name = "lzh";
             m_SyncContext = SynchronizationContext.Current;
+            if (S != null) S.Clear();
         }
 
-
-
+        
         private async void SocketListener_ConnectionReceived(Windows.Networking.Sockets.StreamSocketListener sender, Windows.Networking.Sockets.StreamSocketListenerConnectionReceivedEventArgs args) {
-
+            /*Windows.Networking.Sockets.StreamSocket temp_socket = new Windows.Networking.Sockets.StreamSocket();
+            Windows.Networking.HostName temp_serverHost = new Windows.Networking.HostName("localhost");
+            string temp_serverPort = "8888";            
+            await temp_socket.ConnectAsync(temp_serverHost, temp_serverPort);*/
+            Windows.Networking.Sockets.StreamSocket temp_socket = args.Socket;
+            S.Add(temp_socket);
+            Stream temp_streamIn = temp_socket.InputStream.AsStreamForRead();
+            StreamReader temp_reader = new StreamReader(temp_streamIn);
+            while (true) {
+                string message = await temp_reader.ReadLineAsync();
+                //m_SyncContext.Post(SetTextSafePost, "Server got " + message + "\n");
+                //Rec.message += "Server got "+ message + "\n";
+                foreach (Windows.Networking.Sockets.StreamSocket item in S) {
+                    Stream outStream = item.OutputStream.AsStreamForWrite();
+                    StreamWriter writer = new StreamWriter(outStream);
+                    await writer.WriteLineAsync(message);
+                    await writer.FlushAsync();
+                }
+            }
+            /*
 
             //Read line from the remote client.
             Stream inStream = args.Socket.InputStream.AsStreamForRead();
@@ -48,7 +71,7 @@ namespace TCP_Socket {
             StreamWriter writer = new StreamWriter(outStream);
             await writer.WriteLineAsync(request + "\n");
             await writer.FlushAsync();
-
+            */
         }
 
         private void SetTextSafePost(object text) {
@@ -57,6 +80,7 @@ namespace TCP_Socket {
 
         private async void Button1_Click(object sender, RoutedEventArgs e) {
             try {
+                S = new List<Windows.Networking.Sockets.StreamSocket>();
                 //Create a StreamSocketListener to start listening for TCP connections.
                 Windows.Networking.Sockets.StreamSocketListener socketListener = new Windows.Networking.Sockets.StreamSocketListener();
 
@@ -65,8 +89,6 @@ namespace TCP_Socket {
 
                 //Start listening for incoming TCP connections on the specified port. You can specify any port that' s not currently in use.
                 await socketListener.BindServiceNameAsync("8888");
-
-
                 Rec.message += "Create server success\n";
             } catch (Exception ee) {
                 Rec.message += ee.Message.ToString() + "\n";
@@ -80,7 +102,6 @@ namespace TCP_Socket {
 
         private async void Button2_Click(object sender, RoutedEventArgs e) {
             try {
-                Rec.message += "Connected\n";
                 //Create the StreamSocket and establish a connection to the echo server.
                 clientsocket = new Windows.Networking.Sockets.StreamSocket();
 
@@ -92,7 +113,7 @@ namespace TCP_Socket {
                 //For the echo server/client application we will use a random port 1337.
                 serverPort = "8888";
                 await clientsocket.ConnectAsync(serverHost, serverPort);
-
+                Rec.message += "Connected\n";
 
                 Stream streamIn = clientsocket.InputStream.AsStreamForRead();
                 StreamReader reader = new StreamReader(streamIn);
@@ -121,5 +142,32 @@ namespace TCP_Socket {
             }
         }
 
+        private async void button4_Click(object sender, RoutedEventArgs e) {
+            try {
+                //Create the StreamSocket and establish a connection to the echo server.
+                Windows.Networking.Sockets.StreamSocket client2socket = new Windows.Networking.Sockets.StreamSocket();
+
+                //The server hostname that we will be establishing a connection to. We will be running the server and client locally,
+                //so we will use localhost as the hostname.
+                serverHost = new Windows.Networking.HostName("localhost");//172.19.107.163
+
+                //Every protocol typically has a standard port number. For example HTTP is typically 80, FTP is 20 and 21, etc.
+                //For the echo server/client application we will use a random port 1337.
+                serverPort = "8888";
+                await client2socket.ConnectAsync(serverHost, serverPort);
+                Rec.message += "Connected\n";
+
+                Stream streamIn = client2socket.InputStream.AsStreamForRead();
+                StreamReader reader = new StreamReader(streamIn);
+
+                while (true) {
+                    string response = await reader.ReadLineAsync();
+                    Rec.message += response + "\n";
+                }
+            } catch (Exception ee) {
+                Rec.message += ee.Message.ToString() + "\n";
+                //Handle exception here.            
+            }
+        }
     }
 }
