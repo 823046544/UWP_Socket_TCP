@@ -25,5 +25,8 @@
   <Capabilities>
     <Capability Name="internetClient" />
     <Capability Name="internetClientServer" />
+    <Capability Name="allJoyn" />
+    <uap:Capability Name="chat" />
+    <uap:Capability Name="voipCall" />
   </Capabilities>
 </Package>

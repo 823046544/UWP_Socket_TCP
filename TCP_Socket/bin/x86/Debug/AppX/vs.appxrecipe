@@ -16,7 +16,7 @@
     <PackageRegistrationPath>
     </PackageRegistrationPath>
     <RemoveNonLayoutFiles>true</RemoveNonLayoutFiles>
-    <RegisteredManifestChecksum>91D17C43BF5FDF2476C4773E01940996A9E1A309F1F323595DFD0DC2984E1DD9</RegisteredManifestChecksum>
+    <RegisteredManifestChecksum>17D2AB01F8B603154711BAD6C2243A7927C5CA07DCC613CB64AF5FC492D66080</RegisteredManifestChecksum>
     <RegisteredPackageMoniker>c86ecf30-bbff-4639-be7e-75abad06b65f_1.0.0.0_x86__xgzbyze2se9mm</RegisteredPackageMoniker>
     <RegisteredUserModeAppID>c86ecf30-bbff-4639-be7e-75abad06b65f_xgzbyze2se9mm!App</RegisteredUserModeAppID>
     <RegisteredPackageID>c86ecf30-bbff-4639-be7e-75abad06b65f</RegisteredPackageID>
@@ -28,13 +28,13 @@
     <AppXManifest Include="F:\C#\mid\TCP_Socket\TCP_Socket\bin\x86\Debug\Core\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-03-31T11:17:50.103</Modified>
+      <Modified>2017-04-07T09:16:11.527</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
     <AppxPackagedFile Include="F:\C#\mid\TCP_Socket\TCP_Socket\bin\x86\Debug\TCP_Socket.exe">
       <PackagePath>entrypoint\TCP_Socket.exe</PackagePath>
-      <Modified>2017-03-31T11:17:49.803</Modified>
+      <Modified>2017-04-07T09:16:11.232</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\lzh\.nuget\packages\Microsoft.CSharp\4.0.0\lib\netcore50\Microsoft.CSharp.dll">
       <PackagePath>Microsoft.CSharp.dll</PackagePath>
@@ -95,6 +95,10 @@
     <AppxPackagedFile Include="C:\Users\lzh\.nuget\packages\Microsoft.Win32.Primitives\4.0.0\lib\dotnet\Microsoft.Win32.Primitives.dll">
       <PackagePath>Microsoft.Win32.Primitives.dll</PackagePath>
       <Modified>2015-07-22T15:07:10.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\lzh\.nuget\packages\Newtonsoft.Json\9.0.1\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll">
+      <PackagePath>Newtonsoft.Json.dll</PackagePath>
+      <Modified>2016-06-13T15:06:14.000</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\lzh\.nuget\packages\runtime.any.System.Private.DataContractSerialization\4.1.0\lib\netcore50\System.Private.DataContractSerialization.dll">
       <PackagePath>System.Private.DataContractSerialization.dll</PackagePath>
@@ -497,11 +501,11 @@
     <AppxPackagedFile Include="F:\C#\mid\TCP_Socket\TCP_Socket\bin\x86\Debug\resources.pri">
       <PackagePath>resources.pri</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-03-31T10:58:50.261</Modified>
+      <Modified>2017-04-06T03:31:52.131</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="F:\C#\mid\TCP_Socket\TCP_Socket\bin\x86\Debug\Core\TCP_Socket.exe">
       <PackagePath>TCP_Socket.exe</PackagePath>
-      <Modified>2017-03-31T11:17:50.099</Modified>
+      <Modified>2017-04-07T09:16:11.519</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>
