@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using TCP_Socket.Model;
+using static TCP_Socket.Model.Client;
 //“空白页”项模板在 http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409 上有介绍
 
 namespace TCP_Socket {
@@ -98,7 +99,7 @@ namespace TCP_Socket {
 
                 //Every protocol typically has a standard port number. For example HTTP is typically 80, FTP is 20 and 21, etc.
                 //For the echo server/client application we will use a random port 1337.
-                serverPort = "20000";
+                serverPort = "20000";//"20000";
                 await clientsocket.ConnectAsync(serverHost, serverPort);
                 Rec.message += "Connected\n";
 
@@ -131,20 +132,29 @@ namespace TCP_Socket {
         
 
         Client temp;
-
-        /*async static void Model.Client.Got(string did, string message) {
-            m_SyncContext.Post(SetTextSafePost, "");
-        }*/
-        async static extern void Got(string did, string message) {
-            m_SyncContext.Post(SetTextSafePost, "123");
-        }
-
+        ///192.168.43.104   9999
         private async void button4_Click(object sender, RoutedEventArgs e) {
             try {
                 temp = new Model.Client("20000", "localhost");
                 temp.Listener();
+                temp.GotMessage += (from, msg) => {
+                    Rec.message += from+":"+msg+"\n";
+                };
+                temp.GotError += (msg) => {
+
+                };
             } catch (Exception ee) {
                 Rec.message += ee.Message.ToString() + "\n";
+            }
+        }
+
+        private async void button5_Click(object sender, RoutedEventArgs e) {
+            string message = _input.Text;
+            _input.Text = "";
+            if (message != "" && (clientsocket != null || temp.clientsocket != null)) {
+                temp.Create_Chat_json(message, 1);
+                temp.Send_Message();
+                //await socket.ConnectAsync(serverHost, serverPort);
             }
         }
     }
