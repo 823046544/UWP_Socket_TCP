@@ -8,13 +8,20 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Margin="0,0,-620,-241">
+
+        <Image Width="100" Height="100" x:Name="ShowImage" Margin="157,159,1003,342" Source="Assets/1.png" RenderTransformOrigin="1.25,1.297" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+        <Button x:Name="button6" Content="convert" Margin="163,85,0,0" Click="button6_Click" RenderTransformOrigin="1.386,-1.073" HorizontalAlignment="Left"  VerticalAlignment="Top"/>
+        
         <TextBox x:Name="_input" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Height="30" Width="158" Margin="327,159,0,0" RenderTransformOrigin="0.96,4.6"/>
-        <TextBlock Text="{x:Bind Path=Rec.message, Mode=OneWay }" x:Name="words" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Height="505" Width="347" Margin="327,227,0,0" RenderTransformOrigin="0.455,0.484"/>
+    
+            <TextBlock Text="{x:Bind Path=Rec.message, Mode=OneWay }" x:Name="words" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Height="505" Width="347" Margin="327,227,0,0" RenderTransformOrigin="0.455,0.484"/>
+      
         <Button x:Name="button1" Content="Server" HorizontalAlignment="Left"  VerticalAlignment="Top" Click="Button1_Click" Margin="157,360,0,0"/>
         <Button x:Name="button2" Content="Connect" HorizontalAlignment="Left"  VerticalAlignment="Top" Click="Button2_Click" Margin="157,400,0,0" RenderTransformOrigin="0.815,3.458"/>
         <Button x:Name="button3" Content="Send" HorizontalAlignment="Left"  VerticalAlignment="Top" Click="button3_Click" Margin="532,159,0,0" RenderTransformOrigin="0.815,3.458"/>
         <Button x:Name="button4" Content="Connet2" HorizontalAlignment="Left"  VerticalAlignment="Top" Click="button4_Click" Margin="157,437,0,0" RenderTransformOrigin="0.815,3.458"/>
         <Button x:Name="button5" Content="Send2" HorizontalAlignment="Left"  VerticalAlignment="Top" Click="button5_Click" Margin="612,159,0,0" RenderTransformOrigin="0.815,3.458"/>
+
 
     </Grid>
 </Page>

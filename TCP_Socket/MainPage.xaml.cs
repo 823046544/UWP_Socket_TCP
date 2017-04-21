@@ -16,6 +16,10 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using TCP_Socket.Model;
 using static TCP_Socket.Model.Client;
+using Windows.UI.Xaml.Media.Imaging;
+using Windows.Graphics.Imaging;
+using Windows.Storage.Streams;
+using Windows.Storage;
 //“空白页”项模板在 http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409 上有介绍
 
 namespace TCP_Socket {
@@ -39,10 +43,6 @@ namespace TCP_Socket {
 
         
         private async void SocketListener_ConnectionReceived(Windows.Networking.Sockets.StreamSocketListener sender, Windows.Networking.Sockets.StreamSocketListenerConnectionReceivedEventArgs args) {
-            /*Windows.Networking.Sockets.StreamSocket temp_socket = new Windows.Networking.Sockets.StreamSocket();
-            Windows.Networking.HostName temp_serverHost = new Windows.Networking.HostName("localhost");
-            string temp_serverPort = "8888";            
-            await temp_socket.ConnectAsync(temp_serverHost, temp_serverPort);*/
             bool flag = true;
             Windows.Networking.Sockets.StreamSocket temp_socket = args.Socket;
             foreach (Windows.Networking.Sockets.StreamSocket item in S) if (item == temp_socket) flag = false;
@@ -135,12 +135,35 @@ namespace TCP_Socket {
         ///192.168.43.104   9999
         private async void button4_Click(object sender, RoutedEventArgs e) {
             try {
-                temp = new Model.Client("20000", "localhost");
+                // temp = new Model.Client("20000", "localhost");
+                temp = new Model.Client("9999", "192.168.43.104");
                 temp.Listener();
                 temp.GotMessage += (from, msg) => {
                     Rec.message += from+":"+msg+"\n";
                 };
                 temp.GotError += (msg) => {
+                    Rec.message += msg+"\n";
+                };
+                temp.GotImage +=  async (byteArray) => {
+                    /*
+                    pictureBox1.Image = Image.FromStream(new MemoryStream(pageData));
+                    Bitmap bmp = new Bitmap(new MemoryStream(pageData));
+                    string path = Application.StartupPath;
+                    string fullPath = path + "\\images\\" + Guid.NewGuid().ToString() + ".png";
+                    richTextBox1.Text = fullPath;
+                    bmp.Save(fullPath, System.Drawing.Imaging.ImageFormat.Png);
+                    -------------------------------------------------------------------------------
+                    MemoryStream ms = new MemoryStream(bytes, 0, bytes.Length);
+                    ms.Write(bytes, 0, bytes.Length);
+                    ShowImage = Image.FromStream(ms);
+                    */
+                    var image = new BitmapImage();
+                    using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream()) {
+                        await stream.WriteAsync(byteArray.AsBuffer());
+                        stream.Seek(0);
+                        await image.SetSourceAsync(stream);
+                    }
+                    ShowImage.Source = image;
 
                 };
             } catch (Exception ee) {
@@ -148,14 +171,90 @@ namespace TCP_Socket {
             }
         }
 
-        private async void button5_Click(object sender, RoutedEventArgs e) {
+        private void button5_Click(object sender, RoutedEventArgs e) {
             string message = _input.Text;
             _input.Text = "";
             if (message != "" && (clientsocket != null || temp.clientsocket != null)) {
                 temp.Create_Chat_json(message, 1);
-                temp.Send_Message();
                 //await socket.ConnectAsync(serverHost, serverPort);
             }
         }
+        bool imagechange;
+        string path;
+        private async void button6_Click(object sender, RoutedEventArgs e) {
+            var picker = new Windows.Storage.Pickers.FileOpenPicker();
+            picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
+            picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.PicturesLibrary;
+            picker.FileTypeFilter.Add(".jpg");
+            picker.FileTypeFilter.Add(".png");
+            picker.FileTypeFilter.Add(".jepg");
+            Windows.Storage.StorageFile file = await picker.PickSingleFileAsync();
+            if (file != null) {
+                using (var fileStream = await file.OpenSequentialReadAsync()) {
+                    BitmapImage bitmapImage = new BitmapImage();
+                    bitmapImage.DecodePixelWidth = 100;
+                    bitmapImage.DecodePixelWidth = 100;
+                    // await bitmapImage.SetSourceAsync(fileStream);
+                    ShowImage.Source = bitmapImage;
+                    
+                    var readStream = fileStream.AsStreamForRead();
+                    var byteArray = new byte[readStream.Length];
+                    await readStream.ReadAsync(byteArray, 0, byteArray.Length);
+                    temp.Create_Image_json(readStream.Length, 1, byteArray);
+                }
+                /*imagechange = true;
+                var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
+                var image = new BitmapImage();
+                image.SetSource(stream);
+                ShowImage.Source = image;
+                BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
+                SoftwareBitmap bitmap = await decoder.GetSoftwareBitmapAsync();
+                path = new Guid().ToString() + ".jpg";
+                Windows.Storage.StorageFolder storageFolder =
+                    Windows.Storage.ApplicationData.Current.LocalFolder;
+                Windows.Storage.StorageFile sampleFile =
+                    await storageFolder.CreateFileAsync(path,
+                        Windows.Storage.CreationCollisionOption.GenerateUniqueName);
+                path = sampleFile.Name;
+                SaveSoftwareBitmapToFile(bitmap, sampleFile);
+                */
+            }
+        }
+
+        private async void SaveSoftwareBitmapToFile(SoftwareBitmap softwareBitmap, StorageFile outputFile) {
+            using (IRandomAccessStream stream = await outputFile.OpenAsync(FileAccessMode.ReadWrite)) {
+                BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.JpegEncoderId, stream);
+                encoder.SetSoftwareBitmap(softwareBitmap);
+                encoder.BitmapTransform.InterpolationMode = BitmapInterpolationMode.Fant;
+                encoder.IsThumbnailGenerated = true;
+                try {
+                    await encoder.FlushAsync();
+                } catch (Exception err) {
+                    switch (err.HResult) {
+                        case unchecked((int)0x88982F81):
+                        encoder.IsThumbnailGenerated = false;
+                        break;
+                        default:
+                        throw err;
+                    }
+                }
+                if (encoder.IsThumbnailGenerated == false) {
+                    await encoder.FlushAsync();
+                }
+            }
+            
+        }
     }
 }
+
+
+
+/*
+ *
+byte to string
+string result = System.Text.Encoding.UTF8.GetString(byteArray);
+
+stirng to byte
+byte[] byteArray = System.Text.Encoding.Default.GetBytes(  str  );
+
+*/
