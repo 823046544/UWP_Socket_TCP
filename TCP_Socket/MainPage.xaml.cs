@@ -20,6 +20,8 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
 using Windows.Storage;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 //“空白页”项模板在 http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409 上有介绍
 
 namespace TCP_Socket {
@@ -50,12 +52,38 @@ namespace TCP_Socket {
             Stream temp_streamIn = temp_socket.InputStream.AsStreamForRead();
             StreamReader temp_reader = new StreamReader(temp_streamIn);
             while (true) {
+
+
+                /*
+                int count = 0;
+                byte[] bb = new byte[1];
+                while (true) {
+                    await temp_streamIn.ReadAsync(bb, 0, bb.Length);
+                    count++;
+                    //GotError(bb[0] + "  ");
+                    m_SyncContext.Post(SetTextSafePost, bb[0] + "  ");
+                    if (count > 500) break;
+                }
+                break;
+                */
                 string message = await temp_reader.ReadLineAsync();
+                JObject list = (JObject)JsonConvert.DeserializeObject(message);
+                string format = list["format"].ToString();
+                int length = Convert.ToInt32(list["length"].ToString());
+                byte[] bytesArray = new byte[length];
+                int i = 0;
+                //-------------------------------------------------------------------
+                
+                await temp_streamIn.ReadAsync(bytesArray, 0, length);
+                
                 foreach (Windows.Networking.Sockets.StreamSocket item in S) {
                     Stream outStream = item.OutputStream.AsStreamForWrite();
                     StreamWriter writer = new StreamWriter(outStream);
                     await writer.WriteLineAsync(message);
                     await writer.FlushAsync();
+
+                    outStream.Write(bytesArray, 0, length);
+                    //await writer.FlushAsync();
                 }
             }
         }
@@ -135,16 +163,16 @@ namespace TCP_Socket {
         ///192.168.43.104   9999
         private async void button4_Click(object sender, RoutedEventArgs e) {
             try {
-                // temp = new Model.Client("20000", "localhost");
+                //temp = new Model.Client("20000", "localhost");
                 temp = new Model.Client("9999", "192.168.43.104");
                 temp.Listener();
                 temp.GotMessage += (from, msg) => {
                     Rec.message += from+":"+msg+"\n";
                 };
                 temp.GotError += (msg) => {
-                    Rec.message += msg+"\n";
+                    Rec.message += msg;
                 };
-                temp.GotImage +=  async (byteArray) => {
+                temp.GotImage +=  async (bytesArray) => {
                     /*
                     pictureBox1.Image = Image.FromStream(new MemoryStream(pageData));
                     Bitmap bmp = new Bitmap(new MemoryStream(pageData));
@@ -159,7 +187,7 @@ namespace TCP_Socket {
                     */
                     var image = new BitmapImage();
                     using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream()) {
-                        await stream.WriteAsync(byteArray.AsBuffer());
+                        await stream.WriteAsync(bytesArray.AsBuffer());
                         stream.Seek(0);
                         await image.SetSourceAsync(stream);
                     }
@@ -198,28 +226,22 @@ namespace TCP_Socket {
                     ShowImage.Source = bitmapImage;
                     
                     var readStream = fileStream.AsStreamForRead();
-                    var byteArray = new byte[readStream.Length];
-                    await readStream.ReadAsync(byteArray, 0, byteArray.Length);
-                    temp.Create_Image_json(readStream.Length, 1, byteArray);
+                    long len = readStream.Length;
+                    var bytesArray = new byte[len];
+                    await readStream.ReadAsync(bytesArray, 0, bytesArray.Length);
+                    temp.Create_Image_json(readStream.Length, 1, bytesArray);
                 }
-                /*imagechange = true;
-                var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
-                var image = new BitmapImage();
-                image.SetSource(stream);
-                ShowImage.Source = image;
-                BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
-                SoftwareBitmap bitmap = await decoder.GetSoftwareBitmapAsync();
-                path = new Guid().ToString() + ".jpg";
-                Windows.Storage.StorageFolder storageFolder =
-                    Windows.Storage.ApplicationData.Current.LocalFolder;
-                Windows.Storage.StorageFile sampleFile =
-                    await storageFolder.CreateFileAsync(path,
-                        Windows.Storage.CreationCollisionOption.GenerateUniqueName);
-                path = sampleFile.Name;
-                SaveSoftwareBitmapToFile(bitmap, sampleFile);
-                */
             }
         }
+
+        private void Signup_Click(object sender, RoutedEventArgs e) {
+            temp.Create_Signup_json(Username_B.Text, Password_B.Text, Nickname_B.Text, DateTimeOffset.Now.ToString());
+        }
+
+        private void Signin_Click(object sender, RoutedEventArgs e) {
+            temp.Create_Signin_json(Username_B.Text, Password_B.Text);
+        }
+
 
         private async void SaveSoftwareBitmapToFile(SoftwareBitmap softwareBitmap, StorageFile outputFile) {
             using (IRandomAccessStream stream = await outputFile.OpenAsync(FileAccessMode.ReadWrite)) {
@@ -242,19 +264,8 @@ namespace TCP_Socket {
                     await encoder.FlushAsync();
                 }
             }
-            
         }
     }
 }
 
 
-
-/*
- *
-byte to string
-string result = System.Text.Encoding.UTF8.GetString(byteArray);
-
-stirng to byte
-byte[] byteArray = System.Text.Encoding.Default.GetBytes(  str  );
-
-*/

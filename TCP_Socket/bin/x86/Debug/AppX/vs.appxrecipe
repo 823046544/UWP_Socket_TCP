@@ -28,13 +28,13 @@
     <AppXManifest Include="F:\C#\mid\TCP_Socket\TCP_Socket\bin\x86\Debug\Core\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-04-21T10:14:47.921</Modified>
+      <Modified>2017-04-28T10:32:27.916</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
     <AppxPackagedFile Include="F:\C#\mid\TCP_Socket\TCP_Socket\bin\x86\Debug\TCP_Socket.exe">
       <PackagePath>entrypoint\TCP_Socket.exe</PackagePath>
-      <Modified>2017-04-21T10:14:47.610</Modified>
+      <Modified>2017-04-28T10:32:27.628</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\lzh\.nuget\packages\Microsoft.CSharp\4.0.0\lib\netcore50\Microsoft.CSharp.dll">
       <PackagePath>Microsoft.CSharp.dll</PackagePath>
@@ -452,9 +452,9 @@
       <PackagePath>System.Xml.XmlSerializer.dll</PackagePath>
       <Modified>2015-07-22T15:11:12.000</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="F:\C#\mid\TCP_Socket\TCP_Socket\Assets\1.png">
-      <PackagePath>Assets\1.png</PackagePath>
-      <Modified>2017-03-23T04:04:22.475</Modified>
+    <AppxPackagedFile Include="F:\C#\mid\TCP_Socket\TCP_Socket\Properties\Default.rd.xml">
+      <PackagePath>Properties\Default.rd.xml</PackagePath>
+      <Modified>2017-03-31T07:12:14.024</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="F:\C#\mid\TCP_Socket\TCP_Socket\Assets\LockScreenLogo.scale-200.png">
       <PackagePath>Assets\LockScreenLogo.scale-200.png</PackagePath>
@@ -490,10 +490,6 @@
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2015-09-20T09:22:56.000</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="F:\C#\mid\TCP_Socket\TCP_Socket\Properties\Default.rd.xml">
-      <PackagePath>Properties\Default.rd.xml</PackagePath>
-      <Modified>2017-03-31T07:12:14.024</Modified>
-    </AppxPackagedFile>
     <AppxPackagedFile Include="F:\C#\mid\TCP_Socket\TCP_Socket\bin\x86\Debug\TCP_Socket.xr.xml">
       <PackagePath>TCP_Socket.xr.xml</PackagePath>
       <Modified>2017-04-21T10:02:57.710</Modified>
@@ -505,11 +501,11 @@
     <AppxPackagedFile Include="F:\C#\mid\TCP_Socket\TCP_Socket\bin\x86\Debug\resources.pri">
       <PackagePath>resources.pri</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-04-21T10:02:58.508</Modified>
+      <Modified>2017-04-28T06:56:08.812</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="F:\C#\mid\TCP_Socket\TCP_Socket\bin\x86\Debug\Core\TCP_Socket.exe">
       <PackagePath>TCP_Socket.exe</PackagePath>
-      <Modified>2017-04-21T10:14:47.916</Modified>
+      <Modified>2017-04-28T10:32:27.911</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>

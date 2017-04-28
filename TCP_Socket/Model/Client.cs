@@ -21,14 +21,8 @@ namespace TCP_Socket.Model {
         bool working;
         string msg;
 
-        /*public delegate void GotMessage(string did, string message);
-        public event GotMessage Got;
-
-        void GotMessage(string a, string b) {
-
-        }*/
-
-
+        int cur_rid;
+        
         public delegate void GotMessageHandler(string chat_form, string chat_msg);
         public event GotMessageHandler GotMessage;
         public delegate void GotErrorHandler(string msg);
@@ -43,7 +37,7 @@ namespace TCP_Socket.Model {
             clientsocket = new Windows.Networking.Sockets.StreamSocket();
             serverHost = new Windows.Networking.HostName(HostIp);
         }
-        
+
 
         public async void Listener() {
             try {
@@ -53,17 +47,29 @@ namespace TCP_Socket.Model {
                 reader = new StreamReader(streamIn);
                 while (working) {
                     
+                    int count = 0;
+                    byte[] c = new byte[2000000];
+                    await streamIn.ReadAsync(c, 0, c.Length);
+                    string str_msg = System.Text.Encoding.UTF8.GetString(c);
                     
-                    string response = await reader.ReadLineAsync();
-                    if (response == null) continue;
-                    if (response == "testing") {                                                        /// Just handle testing
-                        GotMessage("Server", response);
-                        msg = "ok, gun!";
-                        this.Send_Message();
-                        continue;
+
+                    /*int count = 0;
+                    byte[] bb = new byte[1];
+                    while (true) {
+                        await streamIn.ReadAsync(bb, 0, bb.Length);
+                        count++;
+                        GotError(bb[0] + "  ");
+                        if (count > 500) break;
                     }
+                    break;*/
+                    string response = "";
+                    for (int i = 0; ;i++) {
+                        response += str_msg[i];
+                        if (str_msg[i] == '\n' && str_msg[i-1] == '\r') break;
+                    }
+                    if (response == null) continue;
                     JObject list = (JObject)JsonConvert.DeserializeObject(response);
-                    if (list["type"].ToString() == "sys") {///handle system response
+                    if (list["type"].ToString() == "sys") {                                             ///handle system response
                         if (list["detail"].ToString() == "sign in") {                                   ///handle signin
                             stauts = list["status"].ToString() == "true" ? true : false;
                             if (stauts) {
@@ -80,6 +86,8 @@ namespace TCP_Socket.Model {
                             if (!stauts) {                                                              ///handle signup error
                                 GotError(msg);
                             }
+                        } else if (list["detail"].ToString() == "room list") {
+
                         }
                     } else if (list["type"].ToString() == "chat") {                                     ///handle chat
                         string chat_from = list["from"].ToString();
@@ -90,10 +98,10 @@ namespace TCP_Socket.Model {
                         string format = list["format"].ToString();
                         int length = Convert.ToInt32(list["length"].ToString());
                         //-------------------------------------------------------------------
-                        byte[] byteArray = new byte[length];
-                        streamIn.Read(byteArray, 0, length);
-                        // await reader.R(byteArray, 0, length);
-                        GotImage(byteArray);
+                        byte[] json_bytes = System.Text.Encoding.UTF8.GetBytes(response);
+                        byte[] bytesArray = new byte[length];
+                        for (int i = 0; i < length; i++) bytesArray[i] = c[i+json_bytes.Length];
+                        GotImage(bytesArray);
                     }
                     
                 }
@@ -117,13 +125,20 @@ namespace TCP_Socket.Model {
             this.Send_Message();
         }
 
-        public void Create_Image_json(long len, int room_num, byte[] bytesArray) {
-            msg = "{ \"type\" : \"file\", \"format\" : \"image\", \"length\" : " +len.ToString() + ", \"to\" :" + room_num.ToString() + "}";
+        public async void Create_Image_json(long len, int room_num, byte[] bytesArray) {
+            msg = "{\"type\":\"file\",\"format\":\"image\",\"length\":" +len.ToString() + ",\"to\":" + room_num.ToString() + "}";
             GotMessage("none", msg);
-            this.Send_Message();
+            if (clientsocket == null) return;
+            streamOut = clientsocket.OutputStream.AsStreamForWrite();
+            writer = new StreamWriter(streamOut);
+            await writer.WriteLineAsync(msg);
+            await writer.FlushAsync();
+
             streamOut = clientsocket.OutputStream.AsStreamForWrite();
             writer = new StreamWriter(streamOut);
             streamOut.Write(bytesArray, 0, (int)len);
+
+            //await writer.FlushAsync();
             //GotImage(bytesArray);
         }
 

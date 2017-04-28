@@ -23,6 +23,13 @@
         <Button x:ConnectionId='10' x:Name="button5" Content="Send2" HorizontalAlignment="Left"  VerticalAlignment="Top"                       Margin="612,159,0,0" RenderTransformOrigin="0.815,3.458"/>
 
 
+        <TextBox x:ConnectionId='11' x:Name="Username_B" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Height="30" Width="158" Margin="758,122,0,0" RenderTransformOrigin="0.96,4.6"/>
+        <TextBox x:ConnectionId='12' x:Name="Password_B" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Height="30" Width="158" Margin="758,159,0,0" RenderTransformOrigin="0.96,4.6"/>
+        <TextBox x:ConnectionId='13' x:Name="Nickname_B" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Height="30" Width="158" Margin="758,196,0,0" RenderTransformOrigin="0.96,4.6"/>
+        <Button x:ConnectionId='14' x:Name="button7" Content="Singup" HorizontalAlignment="Left"  VerticalAlignment="Top"                      Margin="793,279,0,0" RenderTransformOrigin="0.815,3.458"/>
+        <Button x:ConnectionId='15' x:Name="button8" Content="Singin" HorizontalAlignment="Left"  VerticalAlignment="Top"                      Margin="793,316,0,0" RenderTransformOrigin="0.815,3.458"/>
+
+
     </Grid>
 </Page>
 
