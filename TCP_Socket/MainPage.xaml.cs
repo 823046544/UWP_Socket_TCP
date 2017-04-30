@@ -49,41 +49,32 @@ namespace TCP_Socket {
             Windows.Networking.Sockets.StreamSocket temp_socket = args.Socket;
             foreach (Windows.Networking.Sockets.StreamSocket item in S) if (item == temp_socket) flag = false;
             if (flag) S.Add(temp_socket);
-            Stream temp_streamIn = temp_socket.InputStream.AsStreamForRead();
-            StreamReader temp_reader = new StreamReader(temp_streamIn);
+            Stream server_streamIn = temp_socket.InputStream.AsStreamForRead();
+            StreamReader server_reader = new StreamReader(server_streamIn);
             while (true) {
+                
+                byte[] c = new byte[30000000];
+                server_streamIn.Read(c, 0, c.Length);
+                string str_msg = System.Text.Encoding.UTF8.GetString(c);
 
-
-                /*
-                int count = 0;
-                byte[] bb = new byte[1];
-                while (true) {
-                    await temp_streamIn.ReadAsync(bb, 0, bb.Length);
-                    count++;
-                    //GotError(bb[0] + "  ");
-                    m_SyncContext.Post(SetTextSafePost, bb[0] + "  ");
-                    if (count > 500) break;
+                string message = "";
+                for (int i = 0; ; i++) {
+                    message += str_msg[i];
+                    if (str_msg[i] == '\n' && str_msg[i - 1] == '\r') break;
                 }
-                break;
-                */
-                string message = await temp_reader.ReadLineAsync();
+                if (message == null) continue;
                 JObject list = (JObject)JsonConvert.DeserializeObject(message);
-                string format = list["format"].ToString();
+                /*
                 int length = Convert.ToInt32(list["length"].ToString());
-                byte[] bytesArray = new byte[length];
-                int i = 0;
-                //-------------------------------------------------------------------
-                
-                await temp_streamIn.ReadAsync(bytesArray, 0, length);
-                
+                byte[] json_bytes = System.Text.Encoding.UTF8.GetBytes(message);
+                byte[] Imgbytes = new byte[length];
+                for (int i = 0; i < length; i++) Imgbytes[i] = c[i + json_bytes.Length];
+                */
                 foreach (Windows.Networking.Sockets.StreamSocket item in S) {
                     Stream outStream = item.OutputStream.AsStreamForWrite();
                     StreamWriter writer = new StreamWriter(outStream);
-                    await writer.WriteLineAsync(message);
-                    await writer.FlushAsync();
-
-                    outStream.Write(bytesArray, 0, length);
-                    //await writer.FlushAsync();
+                    await outStream.WriteAsync(c, 0, c.Length);
+                    await outStream.FlushAsync();
                 }
             }
         }
@@ -163,8 +154,8 @@ namespace TCP_Socket {
         ///192.168.43.104   9999
         private async void button4_Click(object sender, RoutedEventArgs e) {
             try {
-                //temp = new Model.Client("20000", "localhost");
-                temp = new Model.Client("9999", "192.168.43.104");
+                temp = new Model.Client("20000", "localhost");
+                //temp = new Model.Client("9999", "192.168.43.104");
                 temp.Listener();
                 temp.GotMessage += (from, msg) => {
                     Rec.message += from+":"+msg+"\n";
@@ -172,22 +163,10 @@ namespace TCP_Socket {
                 temp.GotError += (msg) => {
                     Rec.message += msg;
                 };
-                temp.GotImage +=  async (bytesArray) => {
-                    /*
-                    pictureBox1.Image = Image.FromStream(new MemoryStream(pageData));
-                    Bitmap bmp = new Bitmap(new MemoryStream(pageData));
-                    string path = Application.StartupPath;
-                    string fullPath = path + "\\images\\" + Guid.NewGuid().ToString() + ".png";
-                    richTextBox1.Text = fullPath;
-                    bmp.Save(fullPath, System.Drawing.Imaging.ImageFormat.Png);
-                    -------------------------------------------------------------------------------
-                    MemoryStream ms = new MemoryStream(bytes, 0, bytes.Length);
-                    ms.Write(bytes, 0, bytes.Length);
-                    ShowImage = Image.FromStream(ms);
-                    */
+                temp.GotImage +=  async (Imgbytes) => {
                     var image = new BitmapImage();
                     using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream()) {
-                        await stream.WriteAsync(bytesArray.AsBuffer());
+                        await stream.WriteAsync(Imgbytes.AsBuffer());
                         stream.Seek(0);
                         await image.SetSourceAsync(stream);
                     }

@@ -48,20 +48,10 @@ namespace TCP_Socket.Model {
                 while (working) {
                     
                     int count = 0;
-                    byte[] c = new byte[2000000];
+                    byte[] c = new byte[30000000];
                     await streamIn.ReadAsync(c, 0, c.Length);
                     string str_msg = System.Text.Encoding.UTF8.GetString(c);
                     
-
-                    /*int count = 0;
-                    byte[] bb = new byte[1];
-                    while (true) {
-                        await streamIn.ReadAsync(bb, 0, bb.Length);
-                        count++;
-                        GotError(bb[0] + "  ");
-                        if (count > 500) break;
-                    }
-                    break;*/
                     string response = "";
                     for (int i = 0; ;i++) {
                         response += str_msg[i];
@@ -99,9 +89,9 @@ namespace TCP_Socket.Model {
                         int length = Convert.ToInt32(list["length"].ToString());
                         //-------------------------------------------------------------------
                         byte[] json_bytes = System.Text.Encoding.UTF8.GetBytes(response);
-                        byte[] bytesArray = new byte[length];
-                        for (int i = 0; i < length; i++) bytesArray[i] = c[i+json_bytes.Length];
-                        GotImage(bytesArray);
+                        byte[] Imgbytes = new byte[length];
+                        for (int i = 0; i < length; i++) Imgbytes[i] = c[i + json_bytes.Length];
+                        GotImage(Imgbytes);
                     }
                     
                 }
@@ -111,35 +101,34 @@ namespace TCP_Socket.Model {
         }
 
         public void Create_Chat_json(string words, int room_num) {                                      ///add from for debug
-            msg = "{\"type\": \"chat\", \"msg\": \"" + words + "\", \"to\": \"" + room_num.ToString() + "\"      ,\"from\":\"lzh\"          }";
+            msg = "{\"type\": \"chat\", \"msg\": \"" + words + "\", \"to\": \"" + room_num.ToString() + "\"      ,\"from\":\"lzh\"          }" + "\r\n";
             this.Send_Message();
         }
 
         public void Create_Signin_json(string username, string password) {
-            msg = "{\"type\": \"sys\",  \"detail\": \"sign in\", \"driver\": { \"username\": \"" + username + "\", \"password\": \"" + password + "\"} }";
+            msg = "{\"type\": \"sys\",  \"detail\": \"sign in\", \"driver\": { \"username\": \"" + username + "\", \"password\": \"" + password + "\"} }" + "\r\n";
             this.Send_Message();
         }
 
         public void Create_Signup_json(string username, string password, string name, string date) {
-            msg = "{ \"type\": \"sys\", \"detail\": \"sign up\", \"driver\": { \"username\": \"" + username + "\", \"password\": \"" + password + "\", \"name\": \"" + name + "\", \"created_at\": \"" + date + "\" } }";
+            msg = "{ \"type\": \"sys\", \"detail\": \"sign up\", \"driver\": { \"username\": \"" + username + "\", \"password\": \"" + password + "\", \"name\": \"" + name + "\", \"created_at\": \"" + date + "\" } }" + "\r\n";
             this.Send_Message();
         }
 
-        public async void Create_Image_json(long len, int room_num, byte[] bytesArray) {
-            msg = "{\"type\":\"file\",\"format\":\"image\",\"length\":" +len.ToString() + ",\"to\":" + room_num.ToString() + "}";
-            GotMessage("none", msg);
+        public async void Create_Image_json(long len, int room_num, byte[] Imgbytes) {
+            msg = "{\"type\":\"file\",\"format\":\"image\",\"length\":" +len.ToString() + ",\"to\":" + room_num.ToString() + "}"+"\r\n";
             if (clientsocket == null) return;
             streamOut = clientsocket.OutputStream.AsStreamForWrite();
             writer = new StreamWriter(streamOut);
-            await writer.WriteLineAsync(msg);
-            await writer.FlushAsync();
 
-            streamOut = clientsocket.OutputStream.AsStreamForWrite();
-            writer = new StreamWriter(streamOut);
-            streamOut.Write(bytesArray, 0, (int)len);
+            byte[] json_bytes = System.Text.Encoding.UTF8.GetBytes(msg);
+            byte[] combine = new byte[json_bytes.Length+len];
+            int json_count = json_bytes.Length;
+            for (int i = 0; i < json_count; i++) combine[i] = json_bytes[i];
+            for (int i = 0; i < len; i++) combine[i+json_count] = Imgbytes[i];
 
-            //await writer.FlushAsync();
-            //GotImage(bytesArray);
+            await streamOut.WriteAsync(combine, 0, combine.Length);
+            await streamOut.FlushAsync();
         }
 
         Stream streamOut;
@@ -147,9 +136,9 @@ namespace TCP_Socket.Model {
         async public void Send_Message() {
             if (clientsocket == null) return;
             streamOut = clientsocket.OutputStream.AsStreamForWrite();
-            writer = new StreamWriter(streamOut);
-            await writer.WriteLineAsync(msg);
-            await writer.FlushAsync();
+            byte[] json_bytes = System.Text.Encoding.UTF8.GetBytes(msg);
+            await streamOut.WriteAsync(json_bytes, 0, json_bytes.Length);
+            await streamOut.FlushAsync();
         }
 
 
