@@ -31,6 +31,14 @@ namespace TCP_Socket.Model {
         public delegate void GotImageHandler(byte[] bytes);
         public event GotImageHandler GotImage;
 
+
+        public delegate void GotRoomHandler(int rid, string name, string direction, int activeness, string created_at);
+        public event GotRoomHandler GotRoom;
+
+
+       // public delegate void GotDriverHandler(int rid, int did, string nickname, string badge, ava);
+//        public event GotRoomHandler GotDrier;
+
         public Client(string _port, string HostIp){
             serverPort = _port;
             working = true;
@@ -38,6 +46,7 @@ namespace TCP_Socket.Model {
             serverHost = new Windows.Networking.HostName(HostIp);
         }
 
+        int min(int x, int y) {return x<y?x:y; }
 
         public async void Listener() {
             try {
@@ -47,19 +56,33 @@ namespace TCP_Socket.Model {
                 reader = new StreamReader(streamIn);
                 while (working) {
                     
-                    int count = 0;
-                    byte[] c = new byte[30000000];
-                    await streamIn.ReadAsync(c, 0, c.Length);
-                    string str_msg = System.Text.Encoding.UTF8.GetString(c);
-                    
+                    int count, st = 0;
+                    byte[] c = new byte[1024*10240+300];
+                    byte[] first = new byte[1024];
+                    bool flag = false;
+                    count = await streamIn.ReadAsync(first, 0, first.Length);
+                    for (int i = 0; i < 1024; i++) c[st * 1024 + i] = first[i];
+                    st++;
+                    string str_msg = System.Text.Encoding.UTF8.GetString(first);
+                    if (str_msg[0] != '{' || str_msg == null) continue;
                     string response = "";
-                    for (int i = 0; ;i++) {
-                        response += str_msg[i];
-                        if (str_msg[i] == '\n' && str_msg[i-1] == '\r') break;
+                    while (!flag) {
+                        response = "";
+                        for (int i = 0; i < str_msg.Length; i++) {
+                            response += str_msg[i];
+                            if (str_msg[i] == '\n') {
+                                flag = true; break;
+                            }
+                        }
+                        if (flag) break;
+                        count = await streamIn.ReadAsync(first, 0, first.Length);
+                        for (int i = 0; i < 1024; i++) c[st * 1024 + i] = first[i];
+                        st++;
+                        str_msg = System.Text.Encoding.UTF8.GetString(c);
                     }
                     if (response == null) continue;
                     JObject list = (JObject)JsonConvert.DeserializeObject(response);
-                    if (list["type"].ToString() == "sys") {                                             ///handle system response
+                    if (list["type"].ToString() == "sys") {                                         ///handle system response
                         if (list["detail"].ToString() == "sign in") {                                   ///handle signin
                             stauts = list["status"].ToString() == "true" ? true : false;
                             if (stauts) {
@@ -77,7 +100,10 @@ namespace TCP_Socket.Model {
                                 GotError(msg);
                             }
                         } else if (list["detail"].ToString() == "room list") {
-
+                            foreach (var item in list["room"]) {
+                                GotRoom(Convert.ToInt32(item["rid"].ToString()), item["name"].ToString(), item["direction"].ToString(),
+                                        Convert.ToInt32(item["activeness"].ToString()), item["created-at"].ToString());
+                            }
                         }
                     } else if (list["type"].ToString() == "chat") {                                     ///handle chat
                         string chat_from = list["from"].ToString();
@@ -87,10 +113,18 @@ namespace TCP_Socket.Model {
                     } else if (list["type"].ToString() == "file") {                                     ///handle file
                         string format = list["format"].ToString();
                         int length = Convert.ToInt32(list["length"].ToString());
-                        //-------------------------------------------------------------------
                         byte[] json_bytes = System.Text.Encoding.UTF8.GetBytes(response);
+                        int index = json_bytes.Length % 1024;
+                        int res_first = count-index;
+                        int res_len = length-res_first;
                         byte[] Imgbytes = new byte[length];
-                        for (int i = 0; i < length; i++) Imgbytes[i] = c[i + json_bytes.Length];
+                        for (int i = 0; i < res_first; i++) Imgbytes[i] = c[i + index];
+                        index = res_first;
+                        while (res_len > 0) {
+                            count = await streamIn.ReadAsync(first, 0, min(first.Length, res_len));
+                            res_len -= count;
+                            for (int i = 0; i < count; i++) Imgbytes[index++] = first[i];
+                        }
                         GotImage(Imgbytes);
                     }
                     

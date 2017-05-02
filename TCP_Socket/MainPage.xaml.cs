@@ -54,7 +54,7 @@ namespace TCP_Socket {
             while (true) {
                 
                 byte[] c = new byte[30000000];
-                server_streamIn.Read(c, 0, c.Length);
+                int count = await server_streamIn.ReadAsync(c, 0, c.Length);
                 string str_msg = System.Text.Encoding.UTF8.GetString(c);
 
                 string message = "";
@@ -64,16 +64,10 @@ namespace TCP_Socket {
                 }
                 if (message == null) continue;
                 JObject list = (JObject)JsonConvert.DeserializeObject(message);
-                /*
-                int length = Convert.ToInt32(list["length"].ToString());
-                byte[] json_bytes = System.Text.Encoding.UTF8.GetBytes(message);
-                byte[] Imgbytes = new byte[length];
-                for (int i = 0; i < length; i++) Imgbytes[i] = c[i + json_bytes.Length];
-                */
                 foreach (Windows.Networking.Sockets.StreamSocket item in S) {
                     Stream outStream = item.OutputStream.AsStreamForWrite();
                     StreamWriter writer = new StreamWriter(outStream);
-                    await outStream.WriteAsync(c, 0, c.Length);
+                    await outStream.WriteAsync(c, 0, count);
                     await outStream.FlushAsync();
                 }
             }
@@ -145,7 +139,6 @@ namespace TCP_Socket {
                 StreamWriter writer = new StreamWriter(streamOut);
                 await writer.WriteLineAsync(message);
                 await writer.FlushAsync();
-                //await socket.ConnectAsync(serverHost, serverPort);
             }
         }
         

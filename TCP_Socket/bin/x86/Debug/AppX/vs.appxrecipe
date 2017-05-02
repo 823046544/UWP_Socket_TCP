@@ -28,13 +28,13 @@
     <AppXManifest Include="F:\C#\mid\TCP_Socket\TCP_Socket\bin\x86\Debug\Core\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-04-30T08:18:57.503</Modified>
+      <Modified>2017-05-02T04:12:06.161</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
     <AppxPackagedFile Include="F:\C#\mid\TCP_Socket\TCP_Socket\bin\x86\Debug\TCP_Socket.exe">
       <PackagePath>entrypoint\TCP_Socket.exe</PackagePath>
-      <Modified>2017-04-30T08:18:57.216</Modified>
+      <Modified>2017-05-02T04:12:05.886</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\lzh\.nuget\packages\Microsoft.CSharp\4.0.0\lib\netcore50\Microsoft.CSharp.dll">
       <PackagePath>Microsoft.CSharp.dll</PackagePath>
@@ -505,7 +505,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="F:\C#\mid\TCP_Socket\TCP_Socket\bin\x86\Debug\Core\TCP_Socket.exe">
       <PackagePath>TCP_Socket.exe</PackagePath>
-      <Modified>2017-04-30T08:18:57.499</Modified>
+      <Modified>2017-05-02T04:12:06.157</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>
