@@ -1,4 +1,3 @@
-F:\C#\mid\TCP_Socket\TCP_Socket\obj\x86\Debug\TCP_Socket.csprojResolveAssemblyReference.cache
 F:\C#\mid\TCP_Socket\TCP_Socket\obj\x86\Debug\App.g.i.cs
 F:\C#\mid\TCP_Socket\TCP_Socket\obj\x86\Debug\App.g.cs
 F:\C#\mid\TCP_Socket\TCP_Socket\obj\x86\Debug\MainPage.g.i.cs
@@ -193,3 +192,4 @@ F:\C#\mid\TCP_Socket\TCP_Socket\obj\x86\Debug\resources.en-us.resfiles
 F:\C#\mid\TCP_Socket\TCP_Socket\obj\x86\Debug\resources.en-us.resfiles.intermediate
 F:\C#\mid\TCP_Socket\TCP_Socket\obj\x86\Debug\ProjectArchitectures.txt
 F:\C#\mid\TCP_Socket\TCP_Socket\bin\x86\Debug\Newtonsoft.Json.dll
+F:\C#\mid\TCP_Socket\TCP_Socket\obj\x86\Debug\TCP_Socket.csprojResolveAssemblyReference.cache

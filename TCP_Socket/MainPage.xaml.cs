@@ -51,6 +51,7 @@ namespace TCP_Socket {
             if (flag) S.Add(temp_socket);
             Stream server_streamIn = temp_socket.InputStream.AsStreamForRead();
             StreamReader server_reader = new StreamReader(server_streamIn);
+            m_SyncContext.Send(SetTextSafePost,"Got Client");
             while (true) {
                 
                 byte[] c = new byte[30000000];
@@ -63,13 +64,13 @@ namespace TCP_Socket {
                     if (str_msg[i] == '\n' && str_msg[i - 1] == '\r') break;
                 }
                 if (message == null) continue;
-                JObject list = (JObject)JsonConvert.DeserializeObject(message);
+                /*JObject list = (JObject)JsonConvert.DeserializeObject(message);
                 foreach (Windows.Networking.Sockets.StreamSocket item in S) {
                     Stream outStream = item.OutputStream.AsStreamForWrite();
                     StreamWriter writer = new StreamWriter(outStream);
                     await outStream.WriteAsync(c, 0, count);
                     await outStream.FlushAsync();
-                }
+                }*/
             }
         }
 
@@ -77,15 +78,13 @@ namespace TCP_Socket {
             Rec.message += text.ToString();
         }
         Windows.Networking.Sockets.StreamSocketListener socketListener;
-        private async void Button1_Click(object sender, RoutedEventArgs e) {
+        private async void Create_Server(object sender, RoutedEventArgs e) {
             try {
                 S = new List<Windows.Networking.Sockets.StreamSocket>();
                 //Create a StreamSocketListener to start listening for TCP connections.
                 socketListener = new Windows.Networking.Sockets.StreamSocketListener();
-
                 //Hook up an event handler to call when connections are received.
                 socketListener.ConnectionReceived += SocketListener_ConnectionReceived;
-
                 //Start listening for incoming TCP connections on the specified port. You can specify any port that' s not currently in use.
                 await socketListener.BindServiceNameAsync("20000");
                 Rec.message += "Create server success\n";
@@ -101,60 +100,54 @@ namespace TCP_Socket {
         Stream streamIn;
         StreamReader reader;
 
-        private async void Button2_Click(object sender, RoutedEventArgs e) {
-            try {
-                //Create the StreamSocket and establish a connection to the echo server.
-                clientsocket = new Windows.Networking.Sockets.StreamSocket();
-
-                //The server hostname that we will be establishing a connection to. We will be running the server and client locally,
-                //so we will use localhost as the hostname.
-                serverHost = new Windows.Networking.HostName("localhost");//172.19.107.163
-
-                //Every protocol typically has a standard port number. For example HTTP is typically 80, FTP is 20 and 21, etc.
-                //For the echo server/client application we will use a random port 1337.
-                serverPort = "20000";//"20000";
-                await clientsocket.ConnectAsync(serverHost, serverPort);
-                Rec.message += "Connected\n";
-
-                streamIn = clientsocket.InputStream.AsStreamForRead();
-                reader = new StreamReader(streamIn);
-
-                while (true) {
-                    string response = await reader.ReadLineAsync();
-                    Rec.message += response + "\n";
-                }
-            } catch (Exception ee) {
-                Rec.message += ee.Message.ToString() + "\n";
-                //Handle exception here.            
-            }
+        public void Enter_Room1(object sender, RoutedEventArgs e) {
 
         }
 
-        private async void button3_Click(object sender, RoutedEventArgs e) {
+        private async void ServerPort_Send(object sender, RoutedEventArgs e) {
             string message = _input.Text;
             _input.Text = "";
-            if (message != "" && clientsocket != null) {
-                message = user_name + " : " + message;
-                Stream streamOut = clientsocket.OutputStream.AsStreamForWrite();
-                StreamWriter writer = new StreamWriter(streamOut);
-                await writer.WriteLineAsync(message);
-                await writer.FlushAsync();
+            if (message != "" && socketListener != null) {
+                //message = user_name + " : " + message;
+                foreach (Windows.Networking.Sockets.StreamSocket item in S) {
+                    Stream outStream = item.OutputStream.AsStreamForWrite();
+                    StreamWriter writer = new StreamWriter(outStream);
+                    await writer.WriteLineAsync(message);
+                    await writer.FlushAsync();
+                }
+                
             }
         }
         
 
         Client temp;
         ///192.168.43.104   9999
-        private async void button4_Click(object sender, RoutedEventArgs e) {
+        private void ClientPort_Connet(object sender, RoutedEventArgs e) {
             try {
-                temp = new Model.Client("20000", "localhost");
-                //temp = new Model.Client("9999", "192.168.43.104");
+                //temp = new Model.Client("20000", "localhost");
+                temp = new Model.Client("9999", "172.18.159.191");
+                //temp = new Model.Client("9999","192.168.137.63");
                 temp.Listener();
                 temp.GotMessage += (from, msg) => {
                     Rec.message += from+":"+msg+"\n";
                 };
-                temp.GotError += (msg) => {
+                temp.GotSigninError += (msg) => {
                     Rec.message += msg;
+                };
+                temp.GotSigninSucceed += (msg) => {
+                    Rec.message += msg;
+                };
+                temp.GotSignupError += (msg) => {
+                    Rec.message += msg;
+                };
+                temp.GotSignupSucceed += (msg) => {
+                    Rec.message += msg;
+                };
+                temp.GotSysError += (msg) => {
+                    Rec.message += msg;
+                };
+                temp.GotRoom += (rid, name, direction, activeness, created_at) => {
+
                 };
                 temp.GotImage +=  async (Imgbytes) => {
                     var image = new BitmapImage();
@@ -164,7 +157,6 @@ namespace TCP_Socket {
                         await image.SetSourceAsync(stream);
                     }
                     ShowImage.Source = image;
-
                 };
             } catch (Exception ee) {
                 Rec.message += ee.Message.ToString() + "\n";
@@ -196,12 +188,11 @@ namespace TCP_Socket {
                     bitmapImage.DecodePixelWidth = 100;
                     // await bitmapImage.SetSourceAsync(fileStream);
                     ShowImage.Source = bitmapImage;
-                    
                     var readStream = fileStream.AsStreamForRead();
                     long len = readStream.Length;
                     var bytesArray = new byte[len];
                     await readStream.ReadAsync(bytesArray, 0, bytesArray.Length);
-                    temp.Create_Image_json(readStream.Length, 1, bytesArray);
+                    temp.Create_Image_json(Convert.ToInt32(readStream.Length), bytesArray, 0);
                 }
             }
         }
@@ -236,6 +227,36 @@ namespace TCP_Socket {
                     await encoder.FlushAsync();
                 }
             }
+        }
+
+
+        private async void Button2_Click(object sender, RoutedEventArgs e) {
+            try {
+                //Create the StreamSocket and establish a connection to the echo server.
+                clientsocket = new Windows.Networking.Sockets.StreamSocket();
+
+                //The server hostname that we will be establishing a connection to. We will be running the server and client locally,
+                //so we will use localhost as the hostname.
+                serverHost = new Windows.Networking.HostName("localhost");//172.19.107.163
+
+                //Every protocol typically has a standard port number. For example HTTP is typically 80, FTP is 20 and 21, etc.
+                //For the echo server/client application we will use a random port 1337.
+                serverPort = "20000";//"20000";
+                await clientsocket.ConnectAsync(serverHost, serverPort);
+                Rec.message += "Connected\n";
+
+                streamIn = clientsocket.InputStream.AsStreamForRead();
+                reader = new StreamReader(streamIn);
+
+                while (true) {
+                    string response = await reader.ReadLineAsync();
+                    Rec.message += response + "\n";
+                }
+            } catch (Exception ee) {
+                Rec.message += ee.Message.ToString() + "\n";
+                //Handle exception here.            
+            }
+
         }
     }
 }

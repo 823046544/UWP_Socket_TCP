@@ -14,13 +14,13 @@
         
         <TextBox x:ConnectionId='4' x:Name="_input" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Height="30" Width="158" Margin="327,159,0,0" RenderTransformOrigin="0.96,4.6"/>
     
-            <TextBlock x:ConnectionId='5'                                                x:Name="words" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Height="505" Width="347" Margin="327,227,0,0" RenderTransformOrigin="0.455,0.484"/>
+            <TextBlock x:ConnectionId='5'                                                x:Name="words" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Height="3505" Width="347" Margin="327,227,0,0" RenderTransformOrigin="0.455,0.484"/>
       
-        <Button x:ConnectionId='6' x:Name="button1" Content="Server" HorizontalAlignment="Left"  VerticalAlignment="Top"                       Margin="157,360,0,0"/>
+        <Button x:ConnectionId='6' x:Name="Server" Content="Server" HorizontalAlignment="Left"  VerticalAlignment="Top"                       Margin="157,360,0,0"/>
         <Button x:ConnectionId='7' x:Name="button2" Content="Connect" HorizontalAlignment="Left"  VerticalAlignment="Top"                       Margin="157,400,0,0" RenderTransformOrigin="0.815,3.458"/>
-        <Button x:ConnectionId='8' x:Name="button3" Content="Send" HorizontalAlignment="Left"  VerticalAlignment="Top"                       Margin="532,159,0,0" RenderTransformOrigin="0.815,3.458"/>
-        <Button x:ConnectionId='9' x:Name="button4" Content="Connet2" HorizontalAlignment="Left"  VerticalAlignment="Top"                       Margin="157,437,0,0" RenderTransformOrigin="0.815,3.458"/>
-        <Button x:ConnectionId='10' x:Name="button5" Content="Send2" HorizontalAlignment="Left"  VerticalAlignment="Top"                       Margin="612,159,0,0" RenderTransformOrigin="0.815,3.458"/>
+        <Button x:ConnectionId='8' x:Name="Server_Send" Content="Server_Send" HorizontalAlignment="Left"  VerticalAlignment="Top"                         Margin="532,159,0,0" RenderTransformOrigin="0.815,3.458"/>
+        <Button x:ConnectionId='9' x:Name="Client_Connet" Content="Client_Connet" HorizontalAlignment="Left"  VerticalAlignment="Top"                           Margin="157,437,0,0" RenderTransformOrigin="0.815,3.458"/>
+        <Button x:ConnectionId='10' x:Name="button5" Content="Send2" HorizontalAlignment="Left"  VerticalAlignment="Top"                       Margin="638,159,0,0" RenderTransformOrigin="0.815,3.458"/>
 
 
         <TextBox x:ConnectionId='11' x:Name="Username_B" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Height="30" Width="158" Margin="758,122,0,0" RenderTransformOrigin="0.96,4.6"/>
@@ -28,6 +28,8 @@
         <TextBox x:ConnectionId='13' x:Name="Nickname_B" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Height="30" Width="158" Margin="758,196,0,0" RenderTransformOrigin="0.96,4.6"/>
         <Button x:ConnectionId='14' x:Name="button7" Content="Singup" HorizontalAlignment="Left"  VerticalAlignment="Top"                      Margin="793,279,0,0" RenderTransformOrigin="0.815,3.458"/>
         <Button x:ConnectionId='15' x:Name="button8" Content="Singin" HorizontalAlignment="Left"  VerticalAlignment="Top"                      Margin="793,316,0,0" RenderTransformOrigin="0.815,3.458"/>
+
+        <Button x:ConnectionId='16' x:Name="Room1" Content="Room1" HorizontalAlignment="Left"  VerticalAlignment="Top"                     Margin="793,378,0,0" RenderTransformOrigin="0.815,3.458"/>
 
 
     </Grid>
